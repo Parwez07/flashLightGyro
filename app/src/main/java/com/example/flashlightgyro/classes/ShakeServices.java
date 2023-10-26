@@ -1,4 +1,4 @@
-package com.example.flashlightgyro;
+package com.example.flashlightgyro.classes;
 
 import android.app.Service;
 import android.content.Intent;
@@ -47,6 +47,12 @@ public class ShakeServices extends Service implements SensorEventListener {
 
     }
 
+    private void sendShakeBroadcast(boolean flashlightOn) {
+        Intent intent = new Intent("ACTION_SHAKE_DETECTED");
+        intent.putExtra("flashlight_on", flashlightOn);
+        sendBroadcast(intent);
+    }
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -87,16 +93,16 @@ public class ShakeServices extends Service implements SensorEventListener {
 
             if(count >=2){
 
-                global g = new global();
+                LightOnOff g = new LightOnOff();
 
                 if(isFlashlightOn){
-                    g.changeLightState(false,this);
-                    vibrateDevice();
+                    sendShakeBroadcast(false);
                     isFlashlightOn = false;
-                }else{
-                    g.changeLightState(true,this);
                     vibrateDevice();
+                }else{
+                    sendShakeBroadcast(true);
                     isFlashlightOn = true;
+                    vibrateDevice();
                 }
                 count =0;
                 Log.d("allAns", "" + count + " " + isFlashlightOn + " TimeDif " + (timeDiff) + " Acce " + acceleration);
@@ -115,4 +121,6 @@ public class ShakeServices extends Service implements SensorEventListener {
 
         vibrator.vibrate(200); // Vibrate for 200 milliseconds (adjust as needed).
     }
+
+
 }

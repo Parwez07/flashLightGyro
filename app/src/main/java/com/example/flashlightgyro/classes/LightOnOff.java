@@ -1,14 +1,13 @@
-package com.example.flashlightgyro;
+package com.example.flashlightgyro.classes;
 
 import static android.content.Context.CAMERA_SERVICE;
-import static androidx.core.content.ContextCompat.getSystemService;
 
 import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraManager;
 import android.util.Log;
 
-public class global {
+public class LightOnOff {
 
     public void changeLightState(boolean b, Context context) {
 

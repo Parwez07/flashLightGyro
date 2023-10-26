@@ -1,23 +1,24 @@
-package com.example.flashlightgyro;
+package com.example.flashlightgyro.Activity;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.hardware.camera2.CameraAccessException;
-import android.hardware.camera2.CameraManager;
 import android.os.Bundle;
 import android.os.Vibrator;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.flashlightgyro.R;
+import com.example.flashlightgyro.classes.ShakeServices;
+import com.example.flashlightgyro.classes.LightOnOff;
+
 public class MainActivity extends AppCompatActivity {
 
     Button btnOn;
-    Button btnOff , btnSec;
+    Button btnOff ;
     Vibrator vibrator = null;
     private BroadcastReceiver shakeReceiver;
 
@@ -29,18 +30,27 @@ public class MainActivity extends AppCompatActivity {
         btnOff = findViewById(R.id.btnOff);
         btnOn = findViewById(R.id.btnOn);
         vibrator = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-        btnSec = findViewById(R.id.btnSec);
+
 
         // Start the ShakeDetectionService when the app is launched.
         startService(new Intent(this, ShakeServices.class));
 
+        LightOnOff g = new LightOnOff();
 
-        global g = new global();
+        shakeReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+
+                boolean isFlash = intent.getBooleanExtra("flashlight_on",false);
+                g.changeLightState(isFlash,getApplicationContext());
+            }
+        };
+
+        registerReceiver(shakeReceiver, new IntentFilter("ACTION_SHAKE_DETECTED"));
 
         btnOn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
                 g.changeLightState(true,getApplicationContext());
             }
         });
@@ -51,12 +61,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnSec.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                startActivity(new Intent(MainActivity.this,ShakeDetactServices.class));
-            }
-        });
+
 
     }
 
